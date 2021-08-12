@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+      "esModuleInterop": true, // import * as React from 'react'; 원래 이렇게 가져와야 한다. 하지만 이것을 true로 하면 import React from 'react'로 가져올 수 있다.
+      "sourceMap": true, // 나중에 error났을 때 에러난 위치 찾아가기 편하다.
+      "lib": ["ES2020", "DOM"], // 라이브러리이다. ES2020과 DOM. 이 2개 켜놓으면 된다.
+      "jsx": "react", // JSX는 react 말고도 다른 곳에서 쓰일 수 있다. 지정해주자.
+      "module": "esnext", // 최신 모듈(import/export)을 쓰겠다. 이것을 안쓰면 require와 같은 예전 모듈 방식을 쓰겠다.
+      "moduleResolution": "Node", // import/export도 Node가 해석할 수 있게 하겠다.
+      "target": "es5", // es5로 변환하겠다.
+      "strict": true, // 타입체킹 엄격하게 하겠다. => 이것은 꼭 true로 하자. 그렇지 않으면 타입스크립트 의미가 없다. any를 막 쓰는 것을 방지할 수 있다.
+      "resolveJsonModule": true, // import json file 하는 것을 허락하겠다.
+      "baseUrl": ".",
+      "paths": { // 절대경로 설정
+        "@hooks/*": ["hooks/*"],
+        "@components/*": ["components/*"],
+        "@layouts/*": ["layouts/*"],
+        "@pages/*": ["pages/*"],
+        "@utils/*": ["utils/*"],
+        "@typings/*": ["typings/*"]
+      }
+    }
+  }
+
+  // ts를 뭐하러 babel로 바꾸고 다시 babel이 js로 바꾸도록 설정하는가? => 개발하다보면 html, css, img 파일도 생기는데 babel은 이것들을 모두 Js로 변환할 수 있다.

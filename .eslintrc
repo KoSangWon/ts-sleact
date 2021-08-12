@@ -1,0 +1,6 @@
+{
+    "extends": ["plugin:prettier/recommended"],
+    "plugins": ["html"],
+    "parser": "babel-eslint"
+  }
+  
