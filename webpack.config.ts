@@ -45,11 +45,11 @@ const config: webpack.Configuration = {
           ],
           env: {
             development: {
-              // plugins: [['@emotion', { sourceMap: true }], require.resolve('react-refresh/babel')], // hot-reloading을 위한 것. 정확하게 무슨 의미인지 파악하기보다는 hot-reloading을 위한 것이다 정도만 알아두자.
+              plugins: [['@emotion', { sourceMap: true }], require.resolve('react-refresh/babel')], // hot-reloading을 위한 것. 정확하게 무슨 의미인지 파악하기보다는 hot-reloading을 위한 것이다 정도만 알아두자.
             },
-            // production: {
-            //   plugins: ['@emotion'],
-            // },
+            production: {
+              plugins: ['@emotion'],
+            },
           },
         },
         exclude: path.join(__dirname, 'node_modules'),
