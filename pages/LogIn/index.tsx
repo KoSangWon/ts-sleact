@@ -1,7 +1,9 @@
+import useInput from '@hooks/useInput';
 import React from 'react';
 
 const LogIn = () => {
-  return <div>로그인</div>;
+  useInput(2);
+  return <div>ss</div>;
 };
 
 export default LogIn;
