@@ -10,7 +10,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 const config: webpack.Configuration = {
   name: 'sleact', // webpack 이름 설정
   mode: isDevelopment ? 'development' : 'production', // 모드에 따라 다르게 설정
-  devtool: !isDevelopment ? 'hidden-source-map' : 'eval', // devtool 설정
+  devtool: isDevelopment ? 'eval' : 'hidden-source-map', // devtool 설정
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'], // babel이 처리할 확장자 목록
     alias: {
@@ -76,23 +76,25 @@ const config: webpack.Configuration = {
     publicPath: '/dist/', // publicPath는 hot-reloading을 위해서 설정해줌
   },
   devServer: {
-    // 이따가 함
+    // devServer 사용이유 3가지 => 1. hot-reloading 2. proxy server 3. historyFallback
     historyApiFallback: true, // react router에서 필요한 설정.
     port: 3090, // 프론트엔드 서버 포트 설정
     publicPath: '/dist/', // 이것을 해줘야함. index.html에서는 ./dist/app.js가 아닌 /dist/app.js로 해주자. webpack-dev-server에서 쓸 때는 /dist/로 해주자.
-    // proxy: {
-    //   '/api/': {
-    //     target: 'http://localhost:3095',
-    //     changeOrigin: true,
-    //   },
-    // },
+    proxy: {
+      '/api/': {
+        // 프론트엔드에서 /api/ 로 보내는 요청은
+        target: 'http://localhost:3095', // 주소를 3095가 보낸 것처럼(3095는 서버의 도메인)
+        changeOrigin: true, // 바꿔서 보내겠다.
+        // webpack-dev-server가 3095인 마냥 속였기 때문에 OPTIONS 요청이 안보내진다. CORS-Error에 도움을 준다. 백엔드, 프론트엔드가 localhost일때 사용 가능. 나는 예전에 실제 서비스에서 http-proxy-middleware library 사용해서 해결했음
+      },
+    },
   },
 };
 
 // 개발환경때 쓸 plugin
 if (isDevelopment && config.plugins) {
   config.plugins.push(new webpack.HotModuleReplacementPlugin());
-  //   config.plugins.push(new ReactRefreshWebpackPlugin());
+  config.plugins.push(new ReactRefreshWebpackPlugin()); // 이 것이 있어야 hot-reloading 가능
   //   config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'server', openAnalyzer: true }));
 }
 
