@@ -55,8 +55,12 @@ const SignUp = () => {
     [email, nickname, password, mismatchError],
   );
 
+  if (userData === undefined) {
+    return <div>로딩중...</div>;
+  }
+
   if (userData) {
-    return <Redirect to="/workspace/sleact" />;
+    return <Redirect to="/workspace/channel" />;
   }
 
   return (
