@@ -1,10 +1,14 @@
 import useInput from '@hooks/useInput';
 import { Button, Error, Form, Header, Input, Label, LinkContainer } from '@pages/SignUp/styles';
+import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import React, { useCallback, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
+import useSWR from 'swr';
 
 const LogIn = () => {
+  //data가 존재하지 않으면 loading중임
+  const { data: userData, error, revalidate } = useSWR('/api/users', fetcher);
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
@@ -20,13 +24,20 @@ const LogIn = () => {
             withCredentials: true,
           },
         )
-        .then(() => {})
+        .then(() => {
+          revalidate();
+        })
         .catch((error) => {
           setLogInError(error.response?.data?.statusCode === 401);
         });
     },
     [email, password],
   );
+
+  if (!error && userData) {
+    console.log('로그인됨', userData);
+    return <Redirect to="/workspace/sleact/channel/일반" />;
+  }
 
   return (
     <div id="container">

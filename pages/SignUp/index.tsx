@@ -4,8 +4,11 @@ import useInput from '@hooks/useInput';
 import { Redirect } from 'react-router';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
 
 const SignUp = () => {
+  const { data: userData } = useSWR('/api/users', fetcher);
   const [signUpError, setSignUpError] = useState('');
   const [signUpSuccess, setSignUpSuccess] = useState(false);
   const [mismatchError, setMismatchError] = useState(false);
@@ -52,9 +55,9 @@ const SignUp = () => {
     [email, nickname, password, mismatchError],
   );
 
-  // if (userData) {
-  //   return <Redirect to="/workspace/sleact" />;
-  // }
+  if (userData) {
+    return <Redirect to="/workspace/sleact" />;
+  }
 
   return (
     <div id="container">
