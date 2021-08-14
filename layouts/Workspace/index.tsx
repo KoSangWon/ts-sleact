@@ -1,4 +1,5 @@
 import {
+  AddButton,
   Channels,
   Chats,
   Header,
@@ -6,6 +7,7 @@ import {
   ProfileImg,
   ProfileModal,
   RightMenu,
+  WorkspaceButton,
   WorkspaceName,
   Workspaces,
   WorkspaceWrapper,
@@ -19,11 +21,21 @@ import gravatar from 'gravatar';
 import Channel from '@pages/Channel';
 import DirectMessage from '@pages/DirectMessage';
 import Menu from '@components/Menu';
+import { Link } from 'react-router-dom';
+import { IUser } from '@typings/db';
+import { Button, Input, Label } from '@pages/SignUp/styles';
+import useInput from '@hooks/useInput';
+import Modal from '@components/Modal';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 //children을 쓰려면 FC로 반환 타입 지정해주기
 const Workspace = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const { data: userData, error, revalidate, mutate } = useSWR('/api/users', fetcher);
+  const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useState(false);
+  const [newWorkspace, onChangeNewWorkspace, setNewWorkspace] = useInput('');
+  const [newUrl, onChangeNewUrl, setNewUrl] = useInput('');
+  const { data: userData, error, revalidate, mutate } = useSWR<IUser | false>('/api/users', fetcher);
 
   const onLogOut = useCallback(() => {
     axios
@@ -32,12 +44,50 @@ const Workspace = () => {
       })
       .then(() => {
         // revalidate();
-        mutate(false);
+        mutate(false, false);
       });
+  }, []);
+
+  const onCloseUserProfile = useCallback((e) => {
+    e.stopPropagation();
+    setShowUserMenu(false);
   }, []);
 
   const onClickUserProfile = useCallback(() => {
     setShowUserMenu((prev) => !prev);
+  }, []);
+
+  const onClickCreateWorkspace = useCallback(() => {
+    setShowCreateWorkspaceModal(true);
+  }, []);
+
+  const onCreateWorkspace = useCallback(
+    (e) => {
+      toast.success('successssss', { position: 'bottom-center' });
+      e.preventDefault();
+      if (!newWorkspace || !newWorkspace.trim()) return;
+      if (!newUrl || !newUrl.trim()) return;
+      axios
+        .post('/api/workspaces', {
+          workspace: newWorkspace,
+          url: newUrl,
+        })
+        .then(() => {
+          revalidate();
+          setShowCreateWorkspaceModal(false);
+          setNewWorkspace(''); // submit 후 input 창 비워놔야 다음번에 데이터가 안남아있음. 비워주자.
+          setNewUrl('');
+        })
+        .catch((error) => {
+          console.dir(error);
+          toast.error(error.response?.data, { position: 'bottom-center' });
+        });
+    },
+    [newWorkspace, newUrl],
+  );
+
+  const onCloseModal = useCallback(() => {
+    setShowCreateWorkspaceModal(false);
   }, []);
 
   if (!userData) {
@@ -47,25 +97,36 @@ const Workspace = () => {
   return (
     <div>
       <Header>Test</Header>
-      <RightMenu>
-        <span onClick={onClickUserProfile}>
-          <ProfileImg src={gravatar.url(userData.email, { s: '28px', d: 'retro' })} alt={userData.email} />
-          {showUserMenu && (
-            <Menu style={{ right: 0, top: 38 }} show={showUserMenu} onCloseModal={onClickUserProfile}>
-              <ProfileModal>
-                <img src={gravatar.url(userData.email, { s: '36px', d: 'retro' })} alt={userData.email} />
-                <div>
-                  <span id="profile-name">{userData.nickname}</span>
-                  <span id="profile-active">Active</span>
-                </div>
-              </ProfileModal>
-              <button onClick={onLogOut}>로그아웃</button>
-            </Menu>
-          )}
-        </span>
-      </RightMenu>
+      {userData && (
+        <RightMenu>
+          <span onClick={onClickUserProfile}>
+            <ProfileImg src={gravatar.url(userData.email, { s: '28px', d: 'retro' })} alt={userData.email} />
+            {showUserMenu && (
+              <Menu style={{ right: 0, top: 38 }} show={showUserMenu} onCloseModal={onCloseUserProfile}>
+                <ProfileModal>
+                  <img src={gravatar.url(userData.email, { s: '36px', d: 'retro' })} alt={userData.email} />
+                  <div>
+                    <span id="profile-name">{userData.nickname}</span>
+                    <span id="profile-active">Active</span>
+                  </div>
+                </ProfileModal>
+                <button onClick={onLogOut}>로그아웃</button>
+              </Menu>
+            )}
+          </span>
+        </RightMenu>
+      )}
       <WorkspaceWrapper>
-        <Workspaces>test</Workspaces>
+        <Workspaces>
+          {userData?.Workspaces?.map((ws) => {
+            return (
+              <Link key={ws.id} to={`/workspace/${123}/channel/일반`}>
+                <WorkspaceButton>{ws.name.slice(0, 1).toUpperCase()}</WorkspaceButton>
+              </Link>
+            );
+          })}
+          <AddButton onClick={onClickCreateWorkspace}>+</AddButton>
+        </Workspaces>
         <Channels>
           <WorkspaceName>Sleact</WorkspaceName>
           <MenuScroll>MenuScroll</MenuScroll>
@@ -77,6 +138,20 @@ const Workspace = () => {
           </Switch>
         </Chats>
       </WorkspaceWrapper>
+      <Modal show={showCreateWorkspaceModal} onCloseModal={onCloseModal}>
+        <form onSubmit={onCreateWorkspace}>
+          <Label id="workspace-label">
+            <span>워크 스페이스 이름</span>
+            <Input id="workspace" value={newWorkspace} onChange={onChangeNewWorkspace} />
+          </Label>
+          <Label id="workspace-url-label">
+            <span>워크 스페이스 URL</span>
+            <Input id="workspace" value={newUrl} onChange={onChangeNewUrl} />
+          </Label>
+          <Button type="submit">생성하기</Button>
+        </form>
+      </Modal>
+      <ToastContainer position="bottom-center" />
     </div>
   );
 };
