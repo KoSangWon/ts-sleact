@@ -8,7 +8,7 @@ import useSWR from 'swr';
 
 const LogIn = () => {
   //data가 존재하지 않으면 loading중임
-  const { data: userData, error, revalidate } = useSWR('/api/users', fetcher);
+  const { data: userData, error, revalidate, mutate } = useSWR('/api/users', fetcher);
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
@@ -24,8 +24,9 @@ const LogIn = () => {
             withCredentials: true,
           },
         )
-        .then(() => {
-          revalidate();
+        .then((response) => {
+          // revalidate(); // 서버에 요청 한번 더 보냄, mutate로 최적화시킬 수 있음
+          mutate(response.data, false); // 서버에 요청 안보내고 데이터 수정할 수 있음. 두번재 인자에 false를 넣어야 진짜 요청이 안감. 서버에 가기도 전에 화면에 뭔가가 반영됨. 가끔 서버 에러가 터질때가 있어서 점검도 가끔한다. 그러면 인스타 좋아요를 바로 꺼버린다. 그것을 optimistic UI 라고 한다. 점검했는데 되면 그냥 넘어가고 안됐으면 눌린 하트 불꺼버리기. 성공한다고 가정하고 반영하는 것을 optimistic이라 하고, 서버에 요청이 성공하면 반영하는 것을 pessimistic UI라고 한다. 두번째 인자의 false는 서버에 요청 안보낸다. optimistic ui 하고 싶으면 true로 하면 된다.
         })
         .catch((error) => {
           setLogInError(error.response?.data?.statusCode === 401);
