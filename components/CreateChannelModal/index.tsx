@@ -19,8 +19,8 @@ const CreateChannelModal: VFC<Props> = ({ show, onCloseModal, setShowCreateChann
   const [newChannel, onChangeNewChannel, setNewChannel] = useInput('');
   const { workspace, channel } = useParams<{ workspace: string; channel: string }>(); // url에 데이터를 담아 둘 수 있다. 상태 관리를 따로 관리하지 않아도 현재 어느 위치에 있는지 알 수 있다.
 
-  const { data: userData, error, revalidate, mutate } = useSWR<IUser | false>('/api/users', fetcher);
-  const { data: channelData, revalidate: revalidateChannel } = useSWR<IChannel[]>(
+  const { data: userData } = useSWR<IUser | false>('/api/users', fetcher);
+  const { revalidate: revalidateChannel } = useSWR<IChannel[]>(
     userData ? `/api/workspaces/${workspace}/channels` : null,
     fetcher,
   );

@@ -30,11 +30,15 @@ import Modal from '@components/Modal';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CreateChannelModal from '@components/CreateChannelModal';
+import InviteWorkspaceModal from '@components/InviteWorkspaceModal';
+import InviteChannelModal from '@components/InviteChannelModal';
 
 //children을 쓰려면 FC로 반환 타입 지정해주기. 필요없으면 VFC로 해도됨.
 const Workspace: VFC = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useState(false);
+  const [showInviteWorkspaceModal, setShowInviteWorkspaceModal] = useState(false);
+  const [showInviteChannelModal, setShowInviteChannelModal] = useState(false);
   const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
   const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
   const [newWorkspace, onChangeNewWorkspace, setNewWorkspace] = useInput('');
@@ -97,6 +101,8 @@ const Workspace: VFC = () => {
   const onCloseModal = useCallback(() => {
     setShowCreateWorkspaceModal(false);
     setShowCreateChannelModal(false);
+    setShowInviteWorkspaceModal(false);
+    setShowInviteChannelModal(false);
   }, []);
 
   const toggleWorkspaceModal = useCallback(() => {
@@ -106,6 +112,8 @@ const Workspace: VFC = () => {
   const onClickAddChannel = useCallback(() => {
     setShowCreateChannelModal(true);
   }, []);
+
+  const onClickInviteWorkspace = useCallback(() => {}, []);
 
   if (!userData) {
     return <Redirect to="/login" />;
@@ -183,6 +191,17 @@ const Workspace: VFC = () => {
         show={showCreateChannelModal}
         onCloseModal={onCloseModal}
         setShowCreateChannelModal={setShowCreateChannelModal}
+      />
+      <InviteWorkspaceModal
+        show={showInviteWorkspaceModal}
+        onCloseModal={onCloseModal}
+        setShowInviteWorkspaceModal={setShowInviteWorkspaceModal}
+      />
+      showInvitChannelModal
+      <InviteChannelModal
+        show={showInviteChannelModal}
+        onCloseModal={onCloseModal}
+        setShowInviteChannelModal={setShowInviteChannelModal}
       />
       <ToastContainer position="bottom-center" />
     </div>
