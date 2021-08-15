@@ -16,13 +16,13 @@ import {
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import React, { useCallback, useState, VFC } from 'react';
-import { Redirect, Route, Switch, useParams } from 'react-router';
+import { Redirect, Route, Switch, Link } from 'react-router-dom';
 import useSWR from 'swr';
 import gravatar from 'gravatar';
 import Channel from '@pages/Channel';
 import DirectMessage from '@pages/DirectMessage';
 import Menu from '@components/Menu';
-import { Link } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { IChannel, IUser } from '@typings/db';
 import { Button, Input, Label } from '@pages/SignUp/styles';
 import useInput from '@hooks/useInput';
@@ -46,8 +46,10 @@ const Workspace: VFC = () => {
 
   const { workspace } = useParams<{ workspace: string }>();
   const { data: userData, error, revalidate, mutate } = useSWR<IUser | false>('/api/users', fetcher);
-  const { data: channelData } = useSWR<IChannel[]>(userData ? `/api/workspaces/${workspace}/channels` : null, fetcher);
-
+  //   const { data: channelData } = useSWR<IChannel[]>(userData ? `/api/workspaces/${workspace}/channels` : null, fetcher);
+  //   console.log(channelData);
+  //   const { data: memberData } = useSWR<IUser[]>(userData ? `/api/workspaces/${workspace}/members` : null, fetcher);
+  //   console.log(memberData);
   const onLogOut = useCallback(() => {
     axios
       .post('/api/users/logout', null, {
@@ -74,7 +76,6 @@ const Workspace: VFC = () => {
 
   const onCreateWorkspace = useCallback(
     (e) => {
-      toast.success('successssss', { position: 'bottom-center' });
       e.preventDefault();
       if (!newWorkspace || !newWorkspace.trim()) return;
       if (!newUrl || !newUrl.trim()) return;
@@ -113,7 +114,9 @@ const Workspace: VFC = () => {
     setShowCreateChannelModal(true);
   }, []);
 
-  const onClickInviteWorkspace = useCallback(() => {}, []);
+  const onClickInviteWorkspace = useCallback(() => {
+    setShowInviteWorkspaceModal(true);
+  }, []);
 
   if (!userData) {
     return <Redirect to="/login" />;
@@ -145,7 +148,7 @@ const Workspace: VFC = () => {
         <Workspaces>
           {userData?.Workspaces?.map((ws) => {
             return (
-              <Link key={ws.id} to={`/workspace/${123}/channel/일반`}>
+              <Link key={ws.id} to={`/workspace/${ws.url}/channel/일반`}>
                 <WorkspaceButton>{ws.name.slice(0, 1).toUpperCase()}</WorkspaceButton>
               </Link>
             );
@@ -162,9 +165,11 @@ const Workspace: VFC = () => {
                 <button>로그아웃</button>
               </WorkspaceModal>
             </Menu>
-            {channelData?.map((v) => (
+            {/* {channelData?.map((v) => (
               <div>{v.name}</div>
-            ))}
+            ))} */}
+            {/* <ChannelList/>
+            <DMList/> */}
           </MenuScroll>
         </Channels>
         <Chats>

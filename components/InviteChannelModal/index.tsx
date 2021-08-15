@@ -14,12 +14,13 @@ interface Props {
   onCloseModal: () => void;
   setShowInviteChannelModal: (flag: boolean) => void;
 }
+
 const InviteChannelModal: FC<Props> = ({ show, onCloseModal, setShowInviteChannelModal }) => {
-  const { workspace, channel } = useParams<{ workspace: string; channel: string }>();
+  const { workspace, channel } = useParams<{ workspace: string; channel: any }>();
   const [newMember, onChangeNewMember, setNewMember] = useInput('');
   const { data: userData } = useSWR<IUser>('/api/users', fetcher);
   const { revalidate: revalidateMembers } = useSWR<IUser[]>(
-    userData ? `/api/workspaces/${workspace}/channels/${channel}/members` : null,
+    userData && channel ? `/api/workspaces/${workspace}/channels/${channel}/members` : null,
     fetcher,
   );
 
