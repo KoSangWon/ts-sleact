@@ -14,6 +14,8 @@ const Menu: FC<Props> = ({ children, style, onCloseModal, show, closeButton }) =
     e.stopPropagation();
   }, []);
 
+  if (!show) return null;
+
   return (
     <CreateMenu onClick={onCloseModal}>
       <div style={style} onClick={stopPropagation}>
