@@ -14,6 +14,7 @@ const App = () => {
       <Route path="/login" component={LogIn} />
       <Route path="/signup" component={SignUp} />
       <Route path="/workspace/:workspace/channel/:channel" component={Workspace} />
+      <Route path="/workspace/:workspace/dm/:id" component={Workspace} />
     </Switch>
   );
 };

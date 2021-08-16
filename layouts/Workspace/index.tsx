@@ -32,6 +32,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import CreateChannelModal from '@components/CreateChannelModal';
 import InviteWorkspaceModal from '@components/InviteWorkspaceModal';
 import InviteChannelModal from '@components/InviteChannelModal';
+import ChannelList from '@components/ChannelList';
+import DMList from '@components/DMList';
 
 //children을 쓰려면 FC로 반환 타입 지정해주기. 필요없으면 VFC로 해도됨.
 const Workspace: VFC = () => {
@@ -165,11 +167,8 @@ const Workspace: VFC = () => {
                 <button>로그아웃</button>
               </WorkspaceModal>
             </Menu>
-            {/* {channelData?.map((v) => (
-              <div>{v.name}</div>
-            ))} */}
-            {/* <ChannelList/>
-            <DMList/> */}
+            <ChannelList />
+            <DMList />
           </MenuScroll>
         </Channels>
         <Chats>
@@ -202,7 +201,6 @@ const Workspace: VFC = () => {
         onCloseModal={onCloseModal}
         setShowInviteWorkspaceModal={setShowInviteWorkspaceModal}
       />
-      showInvitChannelModal
       <InviteChannelModal
         show={showInviteChannelModal}
         onCloseModal={onCloseModal}
